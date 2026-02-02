@@ -6,7 +6,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.DividerItemDecoration
@@ -47,17 +46,29 @@ class FinishedFragment : Fragment() {
         binding.rvEvents.adapter = adapter
 
         eventViewModel.listEvents.observe(viewLifecycleOwner) { events ->
-            adapter.submitList(events)
+            if (events.isNullOrEmpty()) {
+                binding.viewError.errorLayoutRoot.visibility = View.VISIBLE
+            } else {
+                binding.viewError.errorLayoutRoot.visibility = View.GONE
+                adapter.submitList(events)
+            }
         }
 
         eventViewModel.isLoading.observe(viewLifecycleOwner) {
             showLoading(it)
+            if (it) binding.viewError.errorLayoutRoot.visibility = View.GONE
         }
 
         eventViewModel.errorMessage.observe(viewLifecycleOwner) { message ->
             if (message != null) {
-                Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
+                binding.viewError.errorLayoutRoot.visibility = View.VISIBLE
+            } else {
+                binding.viewError.errorLayoutRoot.visibility = View.GONE
             }
+        }
+
+        binding.viewError.btnRetry.setOnClickListener {
+            eventViewModel.findEvents(0)
         }
 
         if (eventViewModel.listEvents.value == null) {

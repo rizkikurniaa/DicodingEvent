@@ -10,8 +10,10 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.text.HtmlCompat
 import com.bumptech.glide.Glide
+import com.dicoding.event.R
 import com.dicoding.event.data.response.ListEventsItem
 import com.dicoding.event.databinding.ActivityDetailBinding
+import androidx.core.net.toUri
 
 class DetailActivity : AppCompatActivity() {
 
@@ -46,7 +48,8 @@ class DetailActivity : AppCompatActivity() {
 
         detailViewModel.errorMessage.observe(this) { message ->
             if (message != null) {
-                Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
+                val errorText = getString(R.string.error_message, message)
+                Toast.makeText(this, errorText, Toast.LENGTH_SHORT).show()
             }
         }
     }
@@ -63,7 +66,10 @@ class DetailActivity : AppCompatActivity() {
         binding.tvDetailName.text = event.name
         binding.tvDetailOwner.text = event.ownerName
         binding.tvDetailTime.text = event.beginTime
-        binding.tvDetailQuota.text = "Quota: ${event.quota - event.registrants}"
+        
+        val remainingQuota = event.quota - event.registrants
+        binding.tvDetailQuota.text = getString(R.string.quota_format, remainingQuota)
+        
         binding.tvDetailDescription.text = HtmlCompat.fromHtml(
             event.description,
             HtmlCompat.FROM_HTML_MODE_LEGACY
@@ -74,7 +80,7 @@ class DetailActivity : AppCompatActivity() {
 
         binding.btnOpenLink.setOnClickListener {
             val intent = Intent(Intent.ACTION_VIEW)
-            intent.data = Uri.parse(event.link)
+            intent.data = event.link.toUri()
             startActivity(intent)
         }
     }

@@ -17,6 +17,9 @@ class HomeFragment : Fragment() {
 
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = _binding!!
+    
+    private val upcomingViewModel by viewModels<EventViewModel>()
+    private val finishedViewModel by viewModels<EventViewModel>()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -30,7 +33,6 @@ class HomeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Adapter horizontal untuk Upcoming
         val upcomingAdapter = EventAdapter(EventAdapter.VIEW_TYPE_HORIZONTAL) { event ->
             val intent = Intent(requireContext(), DetailActivity::class.java)
             intent.putExtra(DetailActivity.EXTRA_EVENT_ID, event.id.toString())
@@ -39,7 +41,6 @@ class HomeFragment : Fragment() {
         binding.rvUpcomingHome.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
         binding.rvUpcomingHome.adapter = upcomingAdapter
 
-        // Adapter vertikal untuk Finished
         val finishedAdapter = EventAdapter(EventAdapter.VIEW_TYPE_VERTICAL) { event ->
             val intent = Intent(requireContext(), DetailActivity::class.java)
             intent.putExtra(DetailActivity.EXTRA_EVENT_ID, event.id.toString())
@@ -48,23 +49,45 @@ class HomeFragment : Fragment() {
         binding.rvFinishedHome.layoutManager = LinearLayoutManager(requireContext())
         binding.rvFinishedHome.adapter = finishedAdapter
 
-        val upcomingViewModel by viewModels<EventViewModel>()
-        val finishedViewModel by viewModels<EventViewModel>()
-
         upcomingViewModel.listEvents.observe(viewLifecycleOwner) { events ->
-            upcomingAdapter.submitList(events.take(5))
+            if (!events.isNullOrEmpty()) {
+                upcomingAdapter.submitList(events.take(5))
+                binding.viewError.errorLayoutRoot.visibility = View.GONE
+            }
         }
 
         finishedViewModel.listEvents.observe(viewLifecycleOwner) { events ->
-            finishedAdapter.submitList(events.take(5))
+            if (!events.isNullOrEmpty()) {
+                finishedAdapter.submitList(events.take(5))
+                binding.viewError.errorLayoutRoot.visibility = View.GONE
+            }
         }
 
         upcomingViewModel.isLoading.observe(viewLifecycleOwner) {
             showLoading(it)
+            if (it) binding.viewError.errorLayoutRoot.visibility = View.GONE
         }
         
         finishedViewModel.isLoading.observe(viewLifecycleOwner) {
             showLoading(it)
+            if (it) binding.viewError.errorLayoutRoot.visibility = View.GONE
+        }
+
+        upcomingViewModel.errorMessage.observe(viewLifecycleOwner) { message ->
+            if (message != null) {
+                binding.viewError.errorLayoutRoot.visibility = View.VISIBLE
+            }
+        }
+        
+        finishedViewModel.errorMessage.observe(viewLifecycleOwner) { message ->
+            if (message != null) {
+                binding.viewError.errorLayoutRoot.visibility = View.VISIBLE
+            }
+        }
+
+        binding.viewError.btnRetry.setOnClickListener {
+            upcomingViewModel.findEvents(1)
+            finishedViewModel.findEvents(0)
         }
 
         if (upcomingViewModel.listEvents.value == null) upcomingViewModel.findEvents(1)
