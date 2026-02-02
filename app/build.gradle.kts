@@ -52,8 +52,6 @@ dependencies {
     implementation(libs.retrofit.converter.gson)
     implementation(libs.logging.interceptor)
     implementation(libs.glide)
-    implementation(libs.navigation.fragment.ktx)
-    implementation(libs.navigation.ui.ktx)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
