@@ -15,4 +15,6 @@
     <string name="error_title">Something went wrong</string>
     <string name="error_desc">Please check your internet connection or try again later.</string>
     <string name="btn_retry">Try Again</string>
+    <string name="menu_favorite">Favorite</string>
+    <string name="menu_setting">Setting</string>
 </resources>
