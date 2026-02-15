@@ -12,4 +12,12 @@
         android:id="@+id/navigation_finished"
         android:icon="@drawable/ic_finished"
         android:title="@string/menu_finished" />
+    <item
+        android:id="@+id/navigation_favorite"
+        android:icon="@drawable/ic_favorite"
+        android:title="@string/menu_favorite" />
+    <item
+        android:id="@+id/navigation_setting"
+        android:icon="@drawable/ic_settings"
+        android:title="@string/menu_setting" />
 </menu>
