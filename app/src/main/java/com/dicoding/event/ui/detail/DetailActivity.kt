@@ -1,19 +1,18 @@
 package com.dicoding.event.ui.detail
 
 import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.net.toUri
 import androidx.core.text.HtmlCompat
 import com.bumptech.glide.Glide
 import com.dicoding.event.R
 import com.dicoding.event.data.response.ListEventsItem
 import com.dicoding.event.databinding.ActivityDetailBinding
-import androidx.core.net.toUri
 
 class DetailActivity : AppCompatActivity() {
 
@@ -66,10 +65,10 @@ class DetailActivity : AppCompatActivity() {
         binding.tvDetailName.text = event.name
         binding.tvDetailOwner.text = event.ownerName
         binding.tvDetailTime.text = event.beginTime
-        
+
         val remainingQuota = event.quota - event.registrants
         binding.tvDetailQuota.text = getString(R.string.quota_format, remainingQuota)
-        
+
         binding.tvDetailDescription.text = HtmlCompat.fromHtml(
             event.description,
             HtmlCompat.FROM_HTML_MODE_LEGACY
