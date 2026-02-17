@@ -6,12 +6,22 @@
     android:layout_height="match_parent"
     tools:context=".ui.favorite.FavoriteFragment">
 
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rv_favorite"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:listitem="@layout/item_event" />
+
     <TextView
-        android:id="@+id/text_favorite"
+        android:id="@+id/tv_no_favorite"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Favorite Fragment"
-        android:textSize="20sp"
+        android:text="No Favorite Events"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
