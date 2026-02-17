@@ -6,10 +6,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
+import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.dicoding.event.R
 import com.dicoding.event.databinding.FragmentEventListBinding
 import com.dicoding.event.ui.EventAdapter
 import com.dicoding.event.ui.EventViewModel
@@ -51,7 +53,8 @@ class UpcomingFragment : Fragment() {
 
             eventViewModel.listEvents.observe(viewLifecycleOwner) { events ->
                 if (events.isNullOrEmpty()) {
-                    viewError.errorLayoutRoot.visibility = View.VISIBLE
+                    adapter.submitList(emptyList())
+                    showError(getString(R.string.no_data_found), getString(R.string.no_data_found_desc), false)
                 } else {
                     viewError.errorLayoutRoot.visibility = View.GONE
                     adapter.submitList(events)
@@ -65,9 +68,8 @@ class UpcomingFragment : Fragment() {
 
             eventViewModel.errorMessage.observe(viewLifecycleOwner) { message ->
                 if (message != null) {
-                    viewError.errorLayoutRoot.visibility = View.VISIBLE
-                } else {
-                    viewError.errorLayoutRoot.visibility = View.GONE
+                    adapter.submitList(emptyList())
+                    showError(getString(R.string.error_title), getString(R.string.error_desc), true)
                 }
             }
 
@@ -75,9 +77,7 @@ class UpcomingFragment : Fragment() {
                 eventViewModel.findEvents(1)
             }
 
-            if (eventViewModel.listEvents.value == null) {
-                eventViewModel.findEvents(1)
-            }
+            eventViewModel.findEvents(1)
 
             edSearch.setOnEditorActionListener { textView, actionId, _ ->
                 if (actionId == EditorInfo.IME_ACTION_SEARCH) {
@@ -88,6 +88,21 @@ class UpcomingFragment : Fragment() {
                     false
                 }
             }
+
+            edSearch.addTextChangedListener {
+                if (it.isNullOrEmpty()) {
+                    eventViewModel.findEvents(1)
+                }
+            }
+        }
+    }
+
+    private fun showError(title: String, desc: String, showRetry: Boolean) {
+        with(binding.viewError) {
+            errorLayoutRoot.visibility = View.VISIBLE
+            tvErrorTitle.text = title
+            tvErrorDesc.text = desc
+            btnRetry.visibility = if (showRetry) View.VISIBLE else View.GONE
         }
     }
 
