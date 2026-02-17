@@ -1,9 +1,12 @@
 package com.dicoding.event.ui.detail
 
+import android.app.Application
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.dicoding.event.data.local.entity.FavoriteEvent
+import com.dicoding.event.data.repository.FavoriteRepository
 import com.dicoding.event.data.response.DetailEventResponse
 import com.dicoding.event.data.response.ListEventsItem
 import com.dicoding.event.data.retrofit.ApiConfig
@@ -11,7 +14,9 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class DetailViewModel : ViewModel() {
+class DetailViewModel(application: Application) : ViewModel() {
+
+    private val mFavoriteRepository: FavoriteRepository = FavoriteRepository(application)
 
     private val _eventDetail = MutableLiveData<ListEventsItem>()
     val eventDetail: LiveData<ListEventsItem> = _eventDetail
@@ -50,5 +55,25 @@ class DetailViewModel : ViewModel() {
                 _errorMessage.value = t.message
             }
         })
+    }
+
+    fun getFavoriteById(id: String): LiveData<FavoriteEvent> = mFavoriteRepository.getFavoriteEventById(id)
+
+    fun setFavorite(event: ListEventsItem) {
+        val favoriteEvent = FavoriteEvent(
+            id = event.id.toString(),
+            name = event.name,
+            mediaCover = event.mediaCover
+        )
+        mFavoriteRepository.insert(favoriteEvent)
+    }
+
+    fun deleteFavorite(event: ListEventsItem) {
+        val favoriteEvent = FavoriteEvent(
+            id = event.id.toString(),
+            name = event.name,
+            mediaCover = event.mediaCover
+        )
+        mFavoriteRepository.delete(favoriteEvent)
     }
 }
