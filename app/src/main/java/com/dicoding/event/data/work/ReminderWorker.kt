@@ -1,13 +1,16 @@
 package com.dicoding.event.data.work
 
+import android.Manifest
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.os.Build
 import android.util.Log
 import androidx.core.app.NotificationCompat
+import androidx.core.content.ContextCompat
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.dicoding.event.R
@@ -26,8 +29,6 @@ class ReminderWorker(context: Context, workerParams: WorkerParameters) :
     override suspend fun doWork(): Result {
         return try {
             val apiService = ApiConfig.getApiService()
-            // Fetch the nearest active event (active = -1 for search/all, limit = 1)
-            // Or use active = 1 for upcoming. Let's use active = 1 as per requirement "event aktif terdekat"
             val response = apiService.getEvents(active = 1)
             val event = response.listEvents.firstOrNull()
 
@@ -52,25 +53,34 @@ class ReminderWorker(context: Context, workerParams: WorkerParameters) :
             applicationContext,
             0,
             intent,
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) PendingIntent.FLAG_IMMUTABLE else 0
+            PendingIntent.FLAG_IMMUTABLE
         )
 
         val builder = NotificationCompat.Builder(applicationContext, CHANNEL_ID)
-            .setSmallIcon(R.drawable.ic_upcoming) // Reuse existing icon
+            .setSmallIcon(R.drawable.ic_upcoming)
             .setContentTitle("Event Reminder: $title")
             .setContentText("Event starts at $time")
             .setContentIntent(pendingIntent)
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
             .setAutoCancel(true)
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val channel = NotificationChannel(
-                CHANNEL_ID,
-                CHANNEL_NAME,
-                NotificationManager.IMPORTANCE_DEFAULT
-            )
-            builder.setChannelId(CHANNEL_ID)
-            notificationManager.createNotificationChannel(channel)
+        val channel = NotificationChannel(
+            CHANNEL_ID,
+            CHANNEL_NAME,
+            NotificationManager.IMPORTANCE_DEFAULT
+        )
+        builder.setChannelId(CHANNEL_ID)
+        notificationManager.createNotificationChannel(channel)
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (ContextCompat.checkSelfPermission(
+                    applicationContext,
+                    Manifest.permission.POST_NOTIFICATIONS
+                ) != PackageManager.PERMISSION_GRANTED
+            ) {
+                Log.e("ReminderWorker", "Notification permission not granted")
+                return
+            }
         }
 
         val notification = builder.build()
