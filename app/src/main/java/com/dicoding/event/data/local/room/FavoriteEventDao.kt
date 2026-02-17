@@ -7,10 +7,10 @@ import com.dicoding.event.data.local.entity.FavoriteEvent
 @Dao
 interface FavoriteEventDao {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    fun insert(favoriteEvent: FavoriteEvent)
+    suspend fun insert(favoriteEvent: FavoriteEvent)
 
     @Delete
-    fun delete(favoriteEvent: FavoriteEvent)
+    suspend fun delete(favoriteEvent: FavoriteEvent)
 
     @Query("SELECT * from favorite_event ORDER BY id ASC")
     fun getAllFavoriteEvents(): LiveData<List<FavoriteEvent>>

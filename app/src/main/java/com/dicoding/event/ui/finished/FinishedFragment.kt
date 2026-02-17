@@ -13,13 +13,16 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.dicoding.event.databinding.FragmentEventListBinding
 import com.dicoding.event.ui.EventAdapter
 import com.dicoding.event.ui.EventViewModel
+import com.dicoding.event.ui.ViewModelFactory
 import com.dicoding.event.ui.detail.DetailActivity
 
 class FinishedFragment : Fragment() {
 
     private var _binding: FragmentEventListBinding? = null
     private val binding get() = _binding!!
-    private val eventViewModel by viewModels<EventViewModel>()
+    private val eventViewModel by viewModels<EventViewModel> {
+        ViewModelFactory.getInstance(requireContext())
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,

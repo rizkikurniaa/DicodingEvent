@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.dicoding.event.data.response.ListEventsItem
 import com.dicoding.event.databinding.FragmentFavoriteBinding
 import com.dicoding.event.ui.EventAdapter
+import com.dicoding.event.ui.ViewModelFactory
 import com.dicoding.event.ui.detail.DetailActivity
 
 class FavoriteFragment : Fragment() {
@@ -31,7 +32,8 @@ class FavoriteFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val factory = FavoriteViewModelFactory.getInstance(requireActivity().application)
+        // MENGGUNAKAN FACTORY PUSAT
+        val factory = ViewModelFactory.getInstance(requireContext())
         val viewModel = ViewModelProvider(this, factory)[FavoriteViewModel::class.java]
 
         val layoutManager = LinearLayoutManager(requireContext())
@@ -66,7 +68,16 @@ class FavoriteFragment : Fragment() {
                 )
             }
             adapter.submitList(items)
-            binding.tvNoFavorite.visibility = if (items.isEmpty()) View.VISIBLE else View.GONE
+            
+            // Menampilkan/Sembunyikan Error UI jika data kosong
+            if (items.isEmpty()) {
+                binding.viewError.errorLayoutRoot.visibility = View.VISIBLE
+                binding.viewError.tvErrorTitle.text = "No Favorite Found"
+                binding.viewError.tvErrorDesc.text = "You haven't added any events to favorite yet."
+                binding.viewError.btnRetry.visibility = View.GONE
+            } else {
+                binding.viewError.errorLayoutRoot.visibility = View.GONE
+            }
         }
     }
 

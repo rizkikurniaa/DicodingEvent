@@ -15,12 +15,13 @@ import com.bumptech.glide.Glide
 import com.dicoding.event.R
 import com.dicoding.event.data.response.ListEventsItem
 import com.dicoding.event.databinding.ActivityDetailBinding
+import com.dicoding.event.ui.ViewModelFactory
 
 class DetailActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityDetailBinding
     private val detailViewModel by viewModels<DetailViewModel> {
-        DetailViewModelFactory.getInstance(application)
+        ViewModelFactory.getInstance(this)
     }
     private var isFavorite = false
     private var currentEvent: ListEventsItem? = null

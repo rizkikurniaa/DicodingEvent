@@ -11,9 +11,7 @@ import androidx.navigation.ui.setupWithNavController
 import com.dicoding.event.R
 import com.dicoding.event.databinding.ActivityMainBinding
 import com.dicoding.event.ui.ViewModelFactory
-import com.dicoding.event.ui.setting.SettingPreferences
 import com.dicoding.event.ui.setting.SettingViewModel
-import com.dicoding.event.ui.setting.dataStore
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
 class MainActivity : AppCompatActivity() {
@@ -23,8 +21,8 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val pref = SettingPreferences.getInstance(dataStore)
-        val settingViewModel = ViewModelProvider(this, ViewModelFactory(pref))[SettingViewModel::class.java]
+        val factory = ViewModelFactory.getInstance(this)
+        val settingViewModel = ViewModelProvider(this, factory)[SettingViewModel::class.java]
 
         settingViewModel.getThemeSettings().observe(this) { isDarkModeActive: Boolean ->
             if (isDarkModeActive) {

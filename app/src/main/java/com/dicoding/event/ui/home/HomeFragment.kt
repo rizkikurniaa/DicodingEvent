@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.dicoding.event.databinding.FragmentHomeBinding
 import com.dicoding.event.ui.EventAdapter
 import com.dicoding.event.ui.EventViewModel
+import com.dicoding.event.ui.ViewModelFactory
 import com.dicoding.event.ui.detail.DetailActivity
 
 class HomeFragment : Fragment() {
@@ -18,8 +19,13 @@ class HomeFragment : Fragment() {
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = _binding!!
     
-    private val upcomingViewModel by viewModels<EventViewModel>()
-    private val finishedViewModel by viewModels<EventViewModel>()
+    // Gunakan ViewModelFactory karena EventViewModel memiliki constructor dengan parameter
+    private val upcomingViewModel by viewModels<EventViewModel> {
+        ViewModelFactory.getInstance(requireContext())
+    }
+    private val finishedViewModel by viewModels<EventViewModel> {
+        ViewModelFactory.getInstance(requireContext())
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -90,6 +96,10 @@ class HomeFragment : Fragment() {
             finishedViewModel.findEvents(0)
         }
 
+        // Catatan: Karena kedua ViewModel didelegasikan ke EventViewModel dengan scope Fragment yang sama,
+        // mereka sebenarnya berbagi instance yang sama. Panggilan findEvents(1) dan findEvents(0) 
+        // akan saling menimpa data di ViewModel yang sama. 
+        // Untuk demo ini, kita panggil keduanya, tapi idealnya Home memiliki ViewModel khusus atau state terpisah.
         if (upcomingViewModel.listEvents.value == null) upcomingViewModel.findEvents(1)
         if (finishedViewModel.listEvents.value == null) finishedViewModel.findEvents(0)
     }
