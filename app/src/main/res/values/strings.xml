@@ -7,7 +7,6 @@
     <string name="open_link">Open Event Link</string>
     <string name="quota_format">Quota: %1$d</string>
     <string name="event_image">Event Image</string>
-    <string name="loading">Loading...</string>
     <string name="error_message">An error occurred: %1$s</string>
     <string name="menu_home">Home</string>
     <string name="menu_upcoming">Upcoming</string>
@@ -15,4 +14,8 @@
     <string name="error_title">Something went wrong</string>
     <string name="error_desc">Please check your internet connection or try again later.</string>
     <string name="btn_retry">Try Again</string>
+    <string name="menu_favorite">Favorite</string>
+    <string name="menu_setting">Setting</string>
+    <string name="no_data_found">No Data Found</string>
+    <string name="no_data_found_desc">We couldn\'t find any events matching your search.</string>
 </resources>

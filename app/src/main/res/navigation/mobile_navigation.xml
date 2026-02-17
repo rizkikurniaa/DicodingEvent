@@ -8,18 +8,30 @@
     <fragment
         android:id="@+id/navigation_home"
         android:name="com.dicoding.event.ui.home.HomeFragment"
-        android:label="Home"
+        android:label="@string/menu_home"
         tools:layout="@layout/fragment_home" />
 
     <fragment
         android:id="@+id/navigation_upcoming"
         android:name="com.dicoding.event.ui.upcoming.UpcomingFragment"
-        android:label="Upcoming Events"
+        android:label="@string/menu_upcoming"
         tools:layout="@layout/fragment_event_list" />
 
     <fragment
         android:id="@+id/navigation_finished"
         android:name="com.dicoding.event.ui.finished.FinishedFragment"
-        android:label="Finished Events"
+        android:label="@string/menu_finished"
         tools:layout="@layout/fragment_event_list" />
+
+    <fragment
+        android:id="@+id/navigation_favorite"
+        android:name="com.dicoding.event.ui.favorite.FavoriteFragment"
+        android:label="@string/menu_favorite"
+        tools:layout="@layout/fragment_favorite" />
+
+    <fragment
+        android:id="@+id/navigation_setting"
+        android:name="com.dicoding.event.ui.setting.SettingFragment"
+        android:label="@string/menu_setting"
+        tools:layout="@layout/fragment_setting" />
 </navigation>
