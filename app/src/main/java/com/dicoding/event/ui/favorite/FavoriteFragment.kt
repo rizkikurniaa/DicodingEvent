@@ -32,51 +32,51 @@ class FavoriteFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // MENGGUNAKAN FACTORY PUSAT
-        val factory = ViewModelFactory.getInstance(requireContext())
-        val viewModel = ViewModelProvider(this, factory)[FavoriteViewModel::class.java]
+        with(binding) {
+            val factory = ViewModelFactory.getInstance(requireContext())
+            val viewModel = ViewModelProvider(this@FavoriteFragment, factory)[FavoriteViewModel::class.java]
 
-        val layoutManager = LinearLayoutManager(requireContext())
-        binding.rvFavorite.layoutManager = layoutManager
-        val itemDecoration = DividerItemDecoration(requireContext(), layoutManager.orientation)
-        binding.rvFavorite.addItemDecoration(itemDecoration)
+            val layoutManager = LinearLayoutManager(requireContext())
+            rvFavorite.layoutManager = layoutManager
+            val itemDecoration = DividerItemDecoration(requireContext(), layoutManager.orientation)
+            rvFavorite.addItemDecoration(itemDecoration)
 
-        val adapter = EventAdapter { event ->
-            val intent = Intent(requireContext(), DetailActivity::class.java)
-            intent.putExtra(DetailActivity.EXTRA_EVENT_ID, event.id.toString())
-            startActivity(intent)
-        }
-        binding.rvFavorite.adapter = adapter
-
-        viewModel.getAllFavoriteEvents().observe(viewLifecycleOwner) { favoriteEvents ->
-            val items = favoriteEvents.map {
-                ListEventsItem(
-                    id = it.id.toInt(),
-                    name = it.name ?: "",
-                    mediaCover = it.mediaCover ?: "",
-                    summary = "",
-                    registrants = 0,
-                    imageLogo = "",
-                    link = "",
-                    description = "",
-                    ownerName = "",
-                    cityName = "",
-                    quota = 0,
-                    beginTime = "",
-                    endTime = "",
-                    category = ""
-                )
+            val adapter = EventAdapter { event ->
+                val intent = Intent(requireContext(), DetailActivity::class.java)
+                intent.putExtra(DetailActivity.EXTRA_EVENT_ID, event.id.toString())
+                startActivity(intent)
             }
-            adapter.submitList(items)
-            
-            // Menampilkan/Sembunyikan Error UI jika data kosong
-            if (items.isEmpty()) {
-                binding.viewError.errorLayoutRoot.visibility = View.VISIBLE
-                binding.viewError.tvErrorTitle.text = "No Favorite Found"
-                binding.viewError.tvErrorDesc.text = "You haven't added any events to favorite yet."
-                binding.viewError.btnRetry.visibility = View.GONE
-            } else {
-                binding.viewError.errorLayoutRoot.visibility = View.GONE
+            rvFavorite.adapter = adapter
+
+            viewModel.getAllFavoriteEvents().observe(viewLifecycleOwner) { favoriteEvents ->
+                val items = favoriteEvents.map {
+                    ListEventsItem(
+                        id = it.id.toInt(),
+                        name = it.name ?: "",
+                        mediaCover = it.mediaCover ?: "",
+                        summary = "",
+                        registrants = 0,
+                        imageLogo = "",
+                        link = "",
+                        description = "",
+                        ownerName = "",
+                        cityName = "",
+                        quota = 0,
+                        beginTime = "",
+                        endTime = "",
+                        category = ""
+                    )
+                }
+                adapter.submitList(items)
+                
+                if (items.isEmpty()) {
+                    viewError.errorLayoutRoot.visibility = View.VISIBLE
+                    viewError.tvErrorTitle.text = "No Favorite Found"
+                    viewError.tvErrorDesc.text = "You haven't added any events to favorite yet."
+                    viewError.btnRetry.visibility = View.GONE
+                } else {
+                    viewError.errorLayoutRoot.visibility = View.GONE
+                }
             }
         }
     }

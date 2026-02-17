@@ -37,30 +37,32 @@ class SettingFragment : Fragment() {
         val factory = ViewModelFactory.getInstance(requireContext())
         val settingViewModel = ViewModelProvider(this, factory)[SettingViewModel::class.java]
 
-        settingViewModel.getThemeSettings().observe(viewLifecycleOwner) { isDarkModeActive: Boolean ->
-            if (isDarkModeActive) {
-                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
-                binding.switchTheme.isChecked = true
-            } else {
-                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
-                binding.switchTheme.isChecked = false
+        with(binding) {
+            settingViewModel.getThemeSettings().observe(viewLifecycleOwner) { isDarkModeActive: Boolean ->
+                if (isDarkModeActive) {
+                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+                    switchTheme.isChecked = true
+                } else {
+                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+                    switchTheme.isChecked = false
+                }
             }
-        }
 
-        settingViewModel.getReminderSettings().observe(viewLifecycleOwner) { isReminderActive: Boolean ->
-            binding.switchReminder.isChecked = isReminderActive
-        }
+            settingViewModel.getReminderSettings().observe(viewLifecycleOwner) { isReminderActive: Boolean ->
+                switchReminder.isChecked = isReminderActive
+            }
 
-        binding.switchTheme.setOnCheckedChangeListener { _: CompoundButton?, isChecked: Boolean ->
-            settingViewModel.saveThemeSetting(isChecked)
-        }
+            switchTheme.setOnCheckedChangeListener { _: CompoundButton?, isChecked: Boolean ->
+                settingViewModel.saveThemeSetting(isChecked)
+            }
 
-        binding.switchReminder.setOnCheckedChangeListener { _: CompoundButton?, isChecked: Boolean ->
-            settingViewModel.saveReminderSetting(isChecked)
-            if (isChecked) {
-                startPeriodicTask()
-            } else {
-                cancelPeriodicTask()
+            switchReminder.setOnCheckedChangeListener { _: CompoundButton?, isChecked: Boolean ->
+                settingViewModel.saveReminderSetting(isChecked)
+                if (isChecked) {
+                    startPeriodicTask()
+                } else {
+                    cancelPeriodicTask()
+                }
             }
         }
     }

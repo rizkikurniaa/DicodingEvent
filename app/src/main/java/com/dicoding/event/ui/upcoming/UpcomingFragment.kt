@@ -36,55 +36,57 @@ class UpcomingFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val layoutManager = LinearLayoutManager(requireContext())
-        binding.rvEvents.layoutManager = layoutManager
-        val itemDecoration = DividerItemDecoration(requireContext(), layoutManager.orientation)
-        binding.rvEvents.addItemDecoration(itemDecoration)
+        with(binding) {
+            val layoutManager = LinearLayoutManager(requireContext())
+            rvEvents.layoutManager = layoutManager
+            val itemDecoration = DividerItemDecoration(requireContext(), layoutManager.orientation)
+            rvEvents.addItemDecoration(itemDecoration)
 
-        val adapter = EventAdapter { event ->
-            val intent = Intent(requireContext(), DetailActivity::class.java)
-            intent.putExtra(DetailActivity.EXTRA_EVENT_ID, event.id.toString())
-            startActivity(intent)
-        }
-        binding.rvEvents.adapter = adapter
-
-        eventViewModel.listEvents.observe(viewLifecycleOwner) { events ->
-            if (events.isNullOrEmpty()) {
-                binding.viewError.errorLayoutRoot.visibility = View.VISIBLE
-            } else {
-                binding.viewError.errorLayoutRoot.visibility = View.GONE
-                adapter.submitList(events)
+            val adapter = EventAdapter { event ->
+                val intent = Intent(requireContext(), DetailActivity::class.java)
+                intent.putExtra(DetailActivity.EXTRA_EVENT_ID, event.id.toString())
+                startActivity(intent)
             }
-        }
+            rvEvents.adapter = adapter
 
-        eventViewModel.isLoading.observe(viewLifecycleOwner) {
-            showLoading(it)
-            if (it) binding.viewError.errorLayoutRoot.visibility = View.GONE
-        }
-
-        eventViewModel.errorMessage.observe(viewLifecycleOwner) { message ->
-            if (message != null) {
-                binding.viewError.errorLayoutRoot.visibility = View.VISIBLE
-            } else {
-                binding.viewError.errorLayoutRoot.visibility = View.GONE
+            eventViewModel.listEvents.observe(viewLifecycleOwner) { events ->
+                if (events.isNullOrEmpty()) {
+                    viewError.errorLayoutRoot.visibility = View.VISIBLE
+                } else {
+                    viewError.errorLayoutRoot.visibility = View.GONE
+                    adapter.submitList(events)
+                }
             }
-        }
 
-        binding.viewError.btnRetry.setOnClickListener {
-            eventViewModel.findEvents(1)
-        }
+            eventViewModel.isLoading.observe(viewLifecycleOwner) {
+                showLoading(it)
+                if (it) viewError.errorLayoutRoot.visibility = View.GONE
+            }
 
-        if (eventViewModel.listEvents.value == null) {
-            eventViewModel.findEvents(1)
-        }
+            eventViewModel.errorMessage.observe(viewLifecycleOwner) { message ->
+                if (message != null) {
+                    viewError.errorLayoutRoot.visibility = View.VISIBLE
+                } else {
+                    viewError.errorLayoutRoot.visibility = View.GONE
+                }
+            }
 
-        binding.edSearch.setOnEditorActionListener { textView, actionId, _ ->
-            if (actionId == EditorInfo.IME_ACTION_SEARCH) {
-                val query = textView.text.toString()
-                eventViewModel.findEvents(1, query)
-                true
-            } else {
-                false
+            viewError.btnRetry.setOnClickListener {
+                eventViewModel.findEvents(1)
+            }
+
+            if (eventViewModel.listEvents.value == null) {
+                eventViewModel.findEvents(1)
+            }
+
+            edSearch.setOnEditorActionListener { textView, actionId, _ ->
+                if (actionId == EditorInfo.IME_ACTION_SEARCH) {
+                    val query = textView.text.toString()
+                    eventViewModel.findEvents(1, query)
+                    true
+                } else {
+                    false
+                }
             }
         }
     }

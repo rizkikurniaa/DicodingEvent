@@ -10,7 +10,6 @@ class EventRepository private constructor(
     private val apiService: ApiService,
     private val favoriteEventDao: FavoriteEventDao
 ) {
-    // API Section menggunakan suspend function
     suspend fun getEvents(active: Int, query: String? = null): List<ListEventsItem> {
         return apiService.getEvents(active, query).listEvents
     }
@@ -19,7 +18,6 @@ class EventRepository private constructor(
         return apiService.getDetailEvent(id).event
     }
 
-    // Local Section
     fun getAllFavoriteEvents(): LiveData<List<FavoriteEvent>> = favoriteEventDao.getAllFavoriteEvents()
 
     fun getFavoriteById(id: String): LiveData<FavoriteEvent> = favoriteEventDao.getFavoriteEventById(id)

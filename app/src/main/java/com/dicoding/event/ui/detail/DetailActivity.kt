@@ -101,25 +101,27 @@ class DetailActivity : AppCompatActivity() {
     }
 
     private fun setEventData(event: ListEventsItem) {
-        binding.tvDetailName.text = event.name
-        binding.tvDetailOwner.text = event.ownerName
-        binding.tvDetailTime.text = event.beginTime
+        with(binding) {
+            tvDetailName.text = event.name
+            tvDetailOwner.text = event.ownerName
+            tvDetailTime.text = event.beginTime
 
-        val remainingQuota = event.quota - event.registrants
-        binding.tvDetailQuota.text = getString(R.string.quota_format, remainingQuota)
+            val remainingQuota = event.quota - event.registrants
+            tvDetailQuota.text = getString(R.string.quota_format, remainingQuota)
 
-        binding.tvDetailDescription.text = HtmlCompat.fromHtml(
-            event.description,
-            HtmlCompat.FROM_HTML_MODE_LEGACY
-        )
-        Glide.with(this)
-            .load(event.mediaCover)
-            .into(binding.imgDetailPhoto)
+            tvDetailDescription.text = HtmlCompat.fromHtml(
+                event.description,
+                HtmlCompat.FROM_HTML_MODE_LEGACY
+            )
+            Glide.with(this@DetailActivity)
+                .load(event.mediaCover)
+                .into(imgDetailPhoto)
 
-        binding.btnOpenLink.setOnClickListener {
-            val intent = Intent(Intent.ACTION_VIEW)
-            intent.data = event.link.toUri()
-            startActivity(intent)
+            btnOpenLink.setOnClickListener {
+                val intent = Intent(Intent.ACTION_VIEW)
+                intent.data = event.link.toUri()
+                startActivity(intent)
+            }
         }
     }
 

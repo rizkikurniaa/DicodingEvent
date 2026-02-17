@@ -19,7 +19,6 @@ class HomeFragment : Fragment() {
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = _binding!!
     
-    // Gunakan ViewModelFactory karena EventViewModel memiliki constructor dengan parameter
     private val upcomingViewModel by viewModels<EventViewModel> {
         ViewModelFactory.getInstance(requireContext())
     }
@@ -39,67 +38,65 @@ class HomeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val upcomingAdapter = EventAdapter(EventAdapter.VIEW_TYPE_HORIZONTAL) { event ->
-            val intent = Intent(requireContext(), DetailActivity::class.java)
-            intent.putExtra(DetailActivity.EXTRA_EVENT_ID, event.id.toString())
-            startActivity(intent)
-        }
-        binding.rvUpcomingHome.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
-        binding.rvUpcomingHome.adapter = upcomingAdapter
+        with(binding) {
+            val upcomingAdapter = EventAdapter(EventAdapter.VIEW_TYPE_HORIZONTAL) { event ->
+                val intent = Intent(requireContext(), DetailActivity::class.java)
+                intent.putExtra(DetailActivity.EXTRA_EVENT_ID, event.id.toString())
+                startActivity(intent)
+            }
+            rvUpcomingHome.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
+            rvUpcomingHome.adapter = upcomingAdapter
 
-        val finishedAdapter = EventAdapter(EventAdapter.VIEW_TYPE_VERTICAL) { event ->
-            val intent = Intent(requireContext(), DetailActivity::class.java)
-            intent.putExtra(DetailActivity.EXTRA_EVENT_ID, event.id.toString())
-            startActivity(intent)
-        }
-        binding.rvFinishedHome.layoutManager = LinearLayoutManager(requireContext())
-        binding.rvFinishedHome.adapter = finishedAdapter
+            val finishedAdapter = EventAdapter(EventAdapter.VIEW_TYPE_VERTICAL) { event ->
+                val intent = Intent(requireContext(), DetailActivity::class.java)
+                intent.putExtra(DetailActivity.EXTRA_EVENT_ID, event.id.toString())
+                startActivity(intent)
+            }
+            rvFinishedHome.layoutManager = LinearLayoutManager(requireContext())
+            rvFinishedHome.adapter = finishedAdapter
 
-        upcomingViewModel.listEvents.observe(viewLifecycleOwner) { events ->
-            if (!events.isNullOrEmpty()) {
-                upcomingAdapter.submitList(events.take(5))
-                binding.viewError.errorLayoutRoot.visibility = View.GONE
+            upcomingViewModel.listEvents.observe(viewLifecycleOwner) { events ->
+                if (!events.isNullOrEmpty()) {
+                    upcomingAdapter.submitList(events.take(5))
+                    viewError.errorLayoutRoot.visibility = View.GONE
+                }
+            }
+
+            finishedViewModel.listEvents.observe(viewLifecycleOwner) { events ->
+                if (!events.isNullOrEmpty()) {
+                    finishedAdapter.submitList(events.take(5))
+                    viewError.errorLayoutRoot.visibility = View.GONE
+                }
+            }
+
+            upcomingViewModel.isLoading.observe(viewLifecycleOwner) {
+                showLoading(it)
+                if (it) viewError.errorLayoutRoot.visibility = View.GONE
+            }
+            
+            finishedViewModel.isLoading.observe(viewLifecycleOwner) {
+                showLoading(it)
+                if (it) viewError.errorLayoutRoot.visibility = View.GONE
+            }
+
+            upcomingViewModel.errorMessage.observe(viewLifecycleOwner) { message ->
+                if (message != null) {
+                    viewError.errorLayoutRoot.visibility = View.VISIBLE
+                }
+            }
+            
+            finishedViewModel.errorMessage.observe(viewLifecycleOwner) { message ->
+                if (message != null) {
+                    viewError.errorLayoutRoot.visibility = View.VISIBLE
+                }
+            }
+
+            viewError.btnRetry.setOnClickListener {
+                upcomingViewModel.findEvents(1)
+                finishedViewModel.findEvents(0)
             }
         }
 
-        finishedViewModel.listEvents.observe(viewLifecycleOwner) { events ->
-            if (!events.isNullOrEmpty()) {
-                finishedAdapter.submitList(events.take(5))
-                binding.viewError.errorLayoutRoot.visibility = View.GONE
-            }
-        }
-
-        upcomingViewModel.isLoading.observe(viewLifecycleOwner) {
-            showLoading(it)
-            if (it) binding.viewError.errorLayoutRoot.visibility = View.GONE
-        }
-        
-        finishedViewModel.isLoading.observe(viewLifecycleOwner) {
-            showLoading(it)
-            if (it) binding.viewError.errorLayoutRoot.visibility = View.GONE
-        }
-
-        upcomingViewModel.errorMessage.observe(viewLifecycleOwner) { message ->
-            if (message != null) {
-                binding.viewError.errorLayoutRoot.visibility = View.VISIBLE
-            }
-        }
-        
-        finishedViewModel.errorMessage.observe(viewLifecycleOwner) { message ->
-            if (message != null) {
-                binding.viewError.errorLayoutRoot.visibility = View.VISIBLE
-            }
-        }
-
-        binding.viewError.btnRetry.setOnClickListener {
-            upcomingViewModel.findEvents(1)
-            finishedViewModel.findEvents(0)
-        }
-
-        // Catatan: Karena kedua ViewModel didelegasikan ke EventViewModel dengan scope Fragment yang sama,
-        // mereka sebenarnya berbagi instance yang sama. Panggilan findEvents(1) dan findEvents(0) 
-        // akan saling menimpa data di ViewModel yang sama. 
-        // Untuk demo ini, kita panggil keduanya, tapi idealnya Home memiliki ViewModel khusus atau state terpisah.
         if (upcomingViewModel.listEvents.value == null) upcomingViewModel.findEvents(1)
         if (finishedViewModel.listEvents.value == null) finishedViewModel.findEvents(0)
     }
