@@ -7,6 +7,7 @@ import com.dicoding.event.data.repository.EventRepository
 import com.dicoding.event.di.Injection
 import com.dicoding.event.ui.detail.DetailViewModel
 import com.dicoding.event.ui.favorite.FavoriteViewModel
+import com.dicoding.event.ui.home.HomeViewModel
 import com.dicoding.event.ui.setting.SettingPreferences
 import com.dicoding.event.ui.setting.SettingViewModel
 import com.dicoding.event.ui.setting.dataStore
@@ -27,6 +28,9 @@ class ViewModelFactory private constructor(
             }
             modelClass.isAssignableFrom(FavoriteViewModel::class.java) -> {
                 FavoriteViewModel(eventRepository) as T
+            }
+            modelClass.isAssignableFrom(HomeViewModel::class.java) -> {
+                HomeViewModel(eventRepository) as T
             }
             modelClass.isAssignableFrom(SettingViewModel::class.java) -> {
                 SettingViewModel(pref!!) as T
